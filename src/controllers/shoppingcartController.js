@@ -43,6 +43,7 @@ exports.addItemToShoppingCart = async (req, res, next) => {
     productId: productId,
     productName: product.productName,
     quantity: quantity,
+    unitPrice: product.productPrice,
     price: product.productPrice * quantity,
   };
 
@@ -74,8 +75,13 @@ exports.addItemToShoppingCart = async (req, res, next) => {
 
 exports.deleteItemFromShoppingCart = async (req, res, next) => {
   const cartId = req.params.cartId;
-  const productId = req.body.productId;
+  const productId = req.params.productId;
   const quantity = req.body.quantity;
+
+  let quantityToRemove = quantity;
+  if (quantity == null) {
+    quantityToRemove = 1;
+  }
 
   let cart = await ShoppingCart.findById(cartId);
   if (!cart) throw new NotFoundError("That cart does not exist");
@@ -83,25 +89,34 @@ exports.deleteItemFromShoppingCart = async (req, res, next) => {
   const product = await Product.findById(productId);
   if (!product) throw new NotFoundError("Product does not exists");
 
+  const productPriceToRemove = product.productPrice;
   const items = cart.items;
 
-  const foundProduct = items.find((prod) => prod.productId == productId);
-  // if (!foundProduct) throw new NotFoundError("This product does not exist");
+  const foundProduct = items.findIndex((prod) => prod.productId == productId);
 
-  const productPriceToRemove = product.productPrice;
+  if (foundProduct < 0) throw new NotFoundError("This product does not exist");
 
-  if (foundProduct) {
-    if (foundProduct.quantity > quantity) {
-      foundProduct.quantity -= quantity;
-      foundProduct.price -= productPriceToRemove;
+  if (items[foundProduct].quantity > quantityToRemove) {
+    items[foundProduct].quantity -= quantityToRemove;
+    items[foundProduct].price -= productPriceToRemove * quantityToRemove;
+  } else {
+    if (quantityToRemove >= items[foundProduct].quantity) {
+      items[foundProduct].price =
+        productPriceToRemove * items[foundProduct].quantity;
+
+      console.log(items[foundProduct].price);
+      items.splice(foundProduct, 1);
     } else {
+      console.log(items[foundProduct].price, "1");
       items.splice(foundProduct, 1);
     }
-  } else {
-    throw new NotFoundError("This product does not exist in cart");
   }
 
-  cart.totalPrice -= productPriceToRemove * quantity;
+  cart.totalPrice -= productPriceToRemove * quantityToRemove;
+
+  if (cart.totalPrice < 0) {
+    cart.totalPrice = 0;
+  }
 
   const newCart = await cart.save();
 

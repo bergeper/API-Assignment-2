@@ -18,7 +18,7 @@ router.get("/:cartId", getShoppingCartById);
 router.post("/:cartId/items", addItemToShoppingCart);
 
 // /api/v1/shoppingcarts/:cartId/items/
-router.put("/:cartId/items", deleteItemFromShoppingCart);
+router.put("/:cartId/items/:productId", deleteItemFromShoppingCart);
 
 // /api/v1/shoppingcarts/:cartId
 router.delete("/:cartId", deleteShoppingCart);

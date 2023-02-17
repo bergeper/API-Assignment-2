@@ -14,6 +14,10 @@ const ItemSchema = new mongoose.Schema(
       type: Number,
       min: 1,
     },
+    unitPrice: {
+      type: Number,
+      required: true,
+    },
     price: {
       type: Number,
       default: 0,

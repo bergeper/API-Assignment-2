@@ -94,22 +94,18 @@ exports.deleteItemFromShoppingCart = async (req, res, next) => {
 
   const foundProduct = items.findIndex((prod) => prod.productId == productId);
 
-  if (foundProduct < 0) throw new NotFoundError("This product does not exist");
+  if (items[foundProduct].quantity < quantityToRemove)
+    throw new BadRequestError(
+      "You can't remove a higher quantity then the item in cart has."
+    );
+
+  if (!foundProduct < 0) throw new NotFoundError("This product does not exist");
 
   if (items[foundProduct].quantity > quantityToRemove) {
     items[foundProduct].quantity -= quantityToRemove;
     items[foundProduct].price -= productPriceToRemove * quantityToRemove;
   } else {
-    if (quantityToRemove >= items[foundProduct].quantity) {
-      items[foundProduct].price =
-        productPriceToRemove * items[foundProduct].quantity;
-
-      console.log(items[foundProduct].price);
-      items.splice(foundProduct, 1);
-    } else {
-      console.log(items[foundProduct].price, "1");
-      items.splice(foundProduct, 1);
-    }
+    items.splice(foundProduct, 1);
   }
 
   cart.totalPrice -= productPriceToRemove * quantityToRemove;

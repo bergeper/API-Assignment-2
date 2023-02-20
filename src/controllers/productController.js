@@ -1,4 +1,5 @@
 const Product = require("../models/Product");
+const { NotFoundError } = require("../utils/errors");
 
 exports.getAllProducts = async (req, res) => {
   const limit = Number(req.query?.limit) || 10;
@@ -26,7 +27,7 @@ exports.getProductById = async (req, res) => {
   const productId = req.params.productId;
 
   const product = await Product.findById(productId);
-  if (!product) throw new Error("That product does not exist...");
+  if (!product) throw new NotFoundError("That product does not exist...");
 
   return res.status(200).json(product);
 };

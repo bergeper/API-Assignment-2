@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const Product = require("../src/models/Product");
 const { mockProductData } = require("./products");
 
-const populateDbWithMockData = async (connectionString) => {
+const populateDbWithMockProducts = async (connectionString) => {
   try {
     mongoose.set("strictQuery", false);
     const conn = await mongoose.connect(connectionString);
@@ -21,4 +21,4 @@ const populateDbWithMockData = async (connectionString) => {
   }
 };
 
-populateDbWithMockData(process.env.CONNECTION_STRING);
+populateDbWithMockProducts(process.env.CONNECTION_STRING);

@@ -25,16 +25,11 @@ exports.getShoppingCartById = async (req, res, next) => {
 
 exports.addItemToShoppingCart = async (req, res, next) => {
   const cartId = req.params.cartId;
-
   const productId = req.body.productId;
-  const quantity = req.body.quantity;
-  /*
-  if (!cartId || !productId) {
-    throw new BadRequestError("You must provide both a cartId and productId");
-  }
-*/
-  let quantityToAdd = quantity;
-  if (quantity == null) {
+
+  let quantityToAdd = req.body.quantity;
+
+  if (quantityToAdd == null) {
     quantityToAdd = 1;
   }
 
@@ -104,8 +99,6 @@ exports.deleteItemFromShoppingCart = async (req, res, next) => {
       "You can't remove a higher quantity then the item in cart has."
     );
 
-  if (!foundProduct < 0) throw new NotFoundError("This product does not exist");
-
   if (items[foundProduct].quantity > quantityToRemove) {
     items[foundProduct].quantity -= quantityToRemove;
     items[foundProduct].price -= productPriceToRemove * quantityToRemove;
@@ -119,9 +112,9 @@ exports.deleteItemFromShoppingCart = async (req, res, next) => {
     cart.totalPrice = 0;
   }
 
-  const newCart = await cart.save();
+  const updatedCart = await cart.save();
 
-  return res.status(200).json(newCart);
+  return res.status(202).json(updatedCart);
 };
 
 exports.deleteShoppingCart = async (req, res, next) => {

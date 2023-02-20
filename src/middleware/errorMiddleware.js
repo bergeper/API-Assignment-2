@@ -19,13 +19,6 @@ exports.errorMiddleware = (error, req, res, next) => {
     customError.statusCode = 400;
   }
 
-  if (error.code && error.code === 11000) {
-    customError.message = `Duplicate value entered for ${Object.keys(
-      error.keyValue
-    )} field, please choose another value`;
-    customError.statusCode = 400;
-  }
-
   if (error.name === "CastError") {
     customError.message = `No item found with id : ${error.value}`;
     customError.statusCode = 404;

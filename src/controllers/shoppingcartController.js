@@ -28,9 +28,14 @@ exports.addItemToShoppingCart = async (req, res, next) => {
 
   const productId = req.body.productId;
   const quantity = req.body.quantity;
-
-  if (!cartId && !productId && !quantity) {
+  /*
+  if (!cartId || !productId) {
     throw new BadRequestError("You must provide both a cartId and productId");
+  }
+*/
+  let quantityToAdd = quantity;
+  if (quantity == null) {
+    quantityToAdd = 1;
   }
 
   const product = await Product.findById(productId);
@@ -42,17 +47,17 @@ exports.addItemToShoppingCart = async (req, res, next) => {
   const productToCart = {
     productId: productId,
     productName: product.productName,
-    quantity: quantity,
+    quantity: quantityToAdd,
     unitPrice: product.productPrice,
-    price: product.productPrice * quantity,
+    price: product.productPrice * quantityToAdd,
   };
 
   const foundProduct = cart.items.find((prod) => prod.productId == productId);
 
   if (cart.items.length >= 1) {
     if (foundProduct) {
-      foundProduct.quantity += quantity;
-      foundProduct.price += product.productPrice * quantity;
+      foundProduct.quantity += quantityToAdd;
+      foundProduct.price += product.productPrice * quantityToAdd;
     } else {
       cart.items.push(productToCart);
     }
@@ -60,7 +65,7 @@ exports.addItemToShoppingCart = async (req, res, next) => {
     cart.items.push(productToCart);
   }
 
-  cart.totalPrice += product.productPrice * quantity;
+  cart.totalPrice += product.productPrice * quantityToAdd;
 
   const updatedCart = await cart.save();
 

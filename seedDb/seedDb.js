@@ -5,7 +5,7 @@ const { mockProductData } = require("./products");
 
 const populateDbWithMockData = async (connectionString) => {
   try {
-    mongoose.set("strictQuery", false); // https://stackoverflow.com/questions/74747476/deprecationwarning-mongoose-the-strictquery-option-will-be-switched-back-to
+    mongoose.set("strictQuery", false);
     const conn = await mongoose.connect(connectionString);
     console.log(`MongoDB connected: ${conn.connection.host}`);
 
@@ -21,4 +21,4 @@ const populateDbWithMockData = async (connectionString) => {
   }
 };
 
-populateDbWithMockData(process.env.MONGO_CONNECTION_STRING);
+populateDbWithMockData(process.env.CONNECTION_STRING);

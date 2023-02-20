@@ -22,6 +22,7 @@ Just run it.
 POST - /api/v1/shoppingcarts/:cartId/items
 
 Use body to add something to cart.
+If you dont type quantity in body, it will automaticlly be 1
 ex;
 {
 "productId": "63eca744360361eed9769150",
